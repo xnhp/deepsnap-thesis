@@ -94,7 +94,8 @@ class Batch(Graph):
                 )
             if num_nodes is not None:
                 item = torch.full((num_nodes, ), i, dtype=torch.long)
-                batch.batch.append(item)
+                batch.batch.append(item)  # graph index to map from batch back onto
+                    # individual graphs
 
         if num_nodes is None:
             batch.batch = None
