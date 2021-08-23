@@ -732,9 +732,25 @@ class GraphDataset(object):
                             shuffle=shuffle
                         )
                     else:
-                        split_graph = graph.split(
-                            self.task, split_ratio, shuffle=shuffle
-                        )
+                        # [[^0aa60e]] disable internal split for external validation graphs
+                        # [[^b7af3d]] disable internal split
+                        # external split is defined by graphs having an attribute `is_train` or `is_test`
+                        if graph['is_train']:
+                            split_graph = graph.split(
+                                self.task, split_ratio, shuffle=shuffle
+                            )
+                        else:
+                            if self.task != 'node':
+                                # only tested for node task, would probably have to adjust the other code paths
+                                #   (e.g. remove checks)
+                                raise NotImplementedError
+                            # not even needed? ↝ [[^fadb82]]
+                            split_graph = graph.split(
+                                # override by other internal split sizes, this will run into the case
+                                # of ensuring that at least one node is present in each split, i.e.
+                                # other splits will contain a single node.
+                                self.task, [1.0] + [0.0 for sz in split_ratio[1:]], shuffle=shuffle
+                            )
                 else:
                     raise TypeError(
                         "element in self.graphs of unexpected type"
@@ -1055,8 +1071,8 @@ class GraphDataset(object):
             for split_ratio_i in split_ratio
         ):
             raise TypeError("Split ratio must contain all floats.")
-        if not all(split_ratio_i > 0 for split_ratio_i in split_ratio):
-            raise ValueError("Split ratio must contain all positivevalues.")
+        # if not all(split_ratio_i > 0 for split_ratio_i in split_ratio):
+        #     raise ValueError("Split ratio must contain all positivevalues.")
 
         # store the most recent split types
         self._split_types = split_types

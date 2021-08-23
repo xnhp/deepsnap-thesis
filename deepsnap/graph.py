@@ -1175,8 +1175,8 @@ class Graph(object):
             isinstance(split_ratio_i, float) for split_ratio_i in split_ratio
         ):
             raise TypeError("split ratio must contain all floats")
-        if not all(split_ratio_i > 0 for split_ratio_i in split_ratio):
-            raise ValueError("split ratio must contain all positivevalues.")
+        # if not all(split_ratio_i > 0 for split_ratio_i in split_ratio):
+        #     raise ValueError("split ratio must contain all positivevalues.")
 
         if task == "node":
             return self._split_node(split_ratio, shuffle=shuffle)
