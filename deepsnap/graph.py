@@ -810,6 +810,9 @@ class Graph(object):
                 )
             # get edges
             self.edge_index = self._edge_to_index(list(self.G.edges))
+
+            self.mapping_alias_to_int = mapping
+            self.mapping_int_to_alias = dict(zip(vals, keys))
         else:
             mapping = {x: x for x in range(self.num_nodes)}
         if init:

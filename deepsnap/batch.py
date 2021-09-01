@@ -71,6 +71,11 @@ class Batch(Graph):
             ]
         keys = [set(data.keys) for data in data_list]
         keys = list(set.union(*keys))
+        # TODO add other keys here we dont want to collate?
+        if "mapping_alias_to_int" in keys:
+            keys.remove("mapping_alias_to_int")
+        if "mapping_int_to_alias" in keys:
+            keys.remove("mapping_int_to_alias")
         assert "batch" not in keys
 
         batch, cumsum = Batch._init_batch_fields(keys, follow_batch)
@@ -147,6 +152,9 @@ class Batch(Graph):
         else:
             keys = curr_dict.keys
         for key in keys:
+            if key == 'mapping_int_to_alias' or key == 'mapping_alias_to_int':
+                # TODO also add other attribs here that dont need to have in the batch object?
+                continue
             item = curr_dict[key]
             if isinstance(item, dict):
                 # recursively collate every key in the dictionary
