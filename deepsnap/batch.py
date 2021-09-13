@@ -80,10 +80,6 @@ class Batch(Graph):
 
         batch, cumsum = Batch._init_batch_fields(keys, follow_batch)
 
-        if len(data_list) == 1:
-            # we are given a single graph (not reorg. seq) and can thus easily attach the mapping ↝ 607db5
-            batch['mapping_int_to_alias'] = data_list[0]['mapping_int_to_alias']
-
         batch.__data_class__ = data_list[0].__class__
         batch.batch = []
         for i, data in enumerate(data_list):
@@ -111,6 +107,10 @@ class Batch(Graph):
             batch.batch = None
 
         Batch._dict_list_to_tensor(batch, data_list[0])
+
+        if len(data_list) == 1:
+            # we are given a single graph (not reorg. seq) and can thus easily attach the mapping ↝ 607db5
+            batch['mapping_int_to_alias'] = data_list[0]['mapping_int_to_alias']
 
         return batch.contiguous()
 
