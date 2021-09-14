@@ -7,6 +7,15 @@ from typing import (
     List
 )
 
+keys_to_remove = [
+    "mapping_alias_to_int",
+    "mapping_int_to_alias",
+    "sa_root_map",
+    "nx_multidigraph",
+    "nx_simple_ref",
+    "ds_bipartite_projection_ref"
+]
+
 
 class Batch(Graph):
     r"""
@@ -71,11 +80,9 @@ class Batch(Graph):
             ]
         keys = [set(data.keys) for data in data_list]
         keys = list(set.union(*keys))
-        # TODO add other keys here we dont want to collate?
-        if "mapping_alias_to_int" in keys:
-            keys.remove("mapping_alias_to_int")
-        if "mapping_int_to_alias" in keys:
-            keys.remove("mapping_int_to_alias")
+        for key_to_remove in keys_to_remove:
+            if key_to_remove in keys:
+                keys.remove(key_to_remove)
         assert "batch" not in keys
 
         batch, cumsum = Batch._init_batch_fields(keys, follow_batch)
@@ -157,8 +164,7 @@ class Batch(Graph):
         else:
             keys = curr_dict.keys
         for key in keys:
-            if key == 'mapping_int_to_alias' or key == 'mapping_alias_to_int':
-                # TODO also add other attribs here that dont need to have in the batch object?
+            if key in keys_to_remove:
                 continue
             item = curr_dict[key]
             if isinstance(item, dict):
